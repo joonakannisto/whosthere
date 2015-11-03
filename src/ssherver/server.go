@@ -9,7 +9,6 @@ import (
 	"os"
 	"sync"
 	"io/ioutil"
-	"yaml"
 	"time"
 	"gopkg.in/yaml.v2"
 	"github.com/joonakannisto/gocrypto/ssh"
