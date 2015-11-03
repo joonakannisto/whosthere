@@ -16,7 +16,7 @@ import (
 
 
 type IdPConfig struct {
-	HostKey string `yaml:"IdPHost"`
+	IdPHost string `yaml:"IdPHost"`
 }
 type sessionInfo struct {
 	User string
