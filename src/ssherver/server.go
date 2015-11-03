@@ -32,7 +32,7 @@ func (s *Server) PublicKeyCallback(conn ssh.ConnMetadata, key ssh.PublicKey) (*s
 	s.mu.Lock()
 	si := s.sessionInfo[string(conn.SessionID())]
 	si.User = conn.User()
-	string host = "pikkukorppi.cs.tut.fi"
+	host := "pikkukorppi.cs.tut.fi"
 	sshConfig := &ssh.ClientConfig{
 		User: user,
 		Auth: []ssh.AuthMethod{ssh.WorkingKeys(key)},
