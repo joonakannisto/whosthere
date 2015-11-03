@@ -14,7 +14,9 @@ import (
 )
 
 
-
+type Config struct {
+	HostKey string `yaml:"IdPHost"`
+}
 type sessionInfo struct {
 	User string
 	Keys []ssh.PublicKey
@@ -30,12 +32,15 @@ func (s *Server) PublicKeyCallback(conn ssh.ConnMetadata, key ssh.PublicKey) (*s
 	s.mu.Lock()
 	si := s.sessionInfo[string(conn.SessionID())]
 	si.User = conn.User()
-	host := "pikkukorppi.cs.tut.fi"
+	configText, err := ioutil.ReadFile("config.yml")
+	var C Config
+	fatalIfErr(yaml.Unmarshal(configText, &C))
+	
 	sshConfig := &ssh.ClientConfig{
 		User: si.User,
 		Auth: []ssh.AuthMethod{ssh.WorkingKeys(key)},
 	}
-	_, err := ssh.ShakeThat("tcp", host, sshConfig)
+	_, err := ssh.ShakeThat("tcp", C.IdPHost, sshConfig)
         if err != nil {
              si.Keys = append(si.Keys, key)
 	}

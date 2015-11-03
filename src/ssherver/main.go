@@ -19,7 +19,6 @@ type Config struct {
 	HostKey string `yaml:"HostKey"`
 
 	UserAgent    string `yaml:"UserAgent"`
-
 	Listen string `yaml:"Listen"`
 }
 
