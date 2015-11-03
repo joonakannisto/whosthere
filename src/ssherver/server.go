@@ -7,9 +7,7 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strings"
 	"sync"
-	"text/template"
 	"time"
 
 	"github.com/joonakannisto/gocrypto/ssh"
@@ -34,7 +32,7 @@ func (s *Server) PublicKeyCallback(conn ssh.ConnMetadata, key ssh.PublicKey) (*s
 	si.User = conn.User()
 	host := "pikkukorppi.cs.tut.fi"
 	sshConfig := &ssh.ClientConfig{
-		User: user,
+		User: si.User,
 		Auth: []ssh.AuthMethod{ssh.WorkingKeys(key)},
 	}
 	shake, err := ssh.ShakeThat("tcp", host, sshConfig)
@@ -148,12 +146,7 @@ func (s *Server) Handle(nConn net.Conn) {
 		}(requests)
 
 		reqLock.Lock()
-		if agentFwd {
-			channel.Write(agentMsg)
-		}
-		if x11 {
-			channel.Write(x11Msg)
-		}
+		
 
 		
 		if err != nil {
