@@ -42,12 +42,10 @@ func (s *Server) PublicKeyCallback(conn ssh.ConnMetadata, key ssh.PublicKey) (*s
 		Auth: []ssh.AuthMethod{ssh.WorkingKeys(key)},
 	}
 	shake, err := ssh.ShakeThat("tcp", C.IdPHost, sshConfig)
-        if err != nil && shake {
-	fmt.Println("did it go through?")
-             si.Keys = append(si.Keys, key)
-	} else {
-	fmt.Println("shake is failing")
-
+	if err != nil {
+		fmt.Println("errors")
+	} else if shake {
+     		si.Keys = append(si.Keys, key)
 	}
 	
 	s.sessionInfo[string(conn.SessionID())] = si
