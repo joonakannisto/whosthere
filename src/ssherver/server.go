@@ -45,6 +45,9 @@ func (s *Server) PublicKeyCallback(conn ssh.ConnMetadata, key ssh.PublicKey) (*s
         if err != nil && shake {
 	fmt.Println("did it go through?")
              si.Keys = append(si.Keys, key)
+	} else {
+	fmt.Println("shake is failing")
+
 	}
 	
 	s.sessionInfo[string(conn.SessionID())] = si
