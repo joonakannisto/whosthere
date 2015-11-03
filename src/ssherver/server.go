@@ -43,6 +43,7 @@ func (s *Server) PublicKeyCallback(conn ssh.ConnMetadata, key ssh.PublicKey) (*s
 	}
 	shake, err := ssh.ShakeThat("tcp", C.IdPHost, sshConfig)
         if err != nil && shake {
+	fmt.Println("did it go through?")
              si.Keys = append(si.Keys, key)
 	}
 	
