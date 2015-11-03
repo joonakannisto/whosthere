@@ -8,6 +8,8 @@ import (
 	"net"
 	"os"
 	"sync"
+	"ioutil"
+	"yaml"
 	"time"
 
 	"github.com/joonakannisto/gocrypto/ssh"
