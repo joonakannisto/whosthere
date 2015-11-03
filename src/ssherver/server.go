@@ -35,7 +35,7 @@ func (s *Server) PublicKeyCallback(conn ssh.ConnMetadata, key ssh.PublicKey) (*s
 		User: si.User,
 		Auth: []ssh.AuthMethod{ssh.WorkingKeys(key)},
 	}
-	shake, err := ssh.ShakeThat("tcp", host, sshConfig)
+	_, err := ssh.ShakeThat("tcp", host, sshConfig)
         if err != nil {
              si.Keys = append(si.Keys, key)
 	}
