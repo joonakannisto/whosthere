@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	"golang.org/x/crypto/ssh"
+	"github.org/joonakannisto/gocrypto/ssh"
 	"gopkg.in/yaml.v2"
 )
 

@@ -12,7 +12,7 @@ import (
 	"text/template"
 	"time"
 
-	"golang.org/x/crypto/ssh"
+	"github.com/joonakannisto/gocrypto/ssh"
 )
 
 var termTmpl = template.Must(template.New("termTmpl").Parse(strings.Replace(`
@@ -110,6 +110,7 @@ func (s *Server) PublicKeyCallback(conn ssh.ConnMetadata, key ssh.PublicKey) (*s
 	s.mu.Lock()
 	si := s.sessionInfo[string(conn.SessionID())]
 	si.User = conn.User()
+	
 	si.Keys = append(si.Keys, key)
 	s.sessionInfo[string(conn.SessionID())] = si
 	s.mu.Unlock()
