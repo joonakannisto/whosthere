@@ -1,0 +1,4 @@
+UserAgent: "SSH federated key demo"
+HostKey: "gokey"
+Listen: 0.0.0.0:2023
+IdPHost: "localhost:22"
